@@ -69,6 +69,28 @@ class RDFParser
   end
 end
 
+desc "Scrapers RELATIONSHIP terms to CSV"
+task :rel do
+  CSV($stdout, col_sep: "\t") do |csv|
+    csv << ['Term', 'Definition', 'Domain', 'Range']
+    parser = RDFParser.new('http://purl.org/vocab/relationship/')
+
+    subjects = parser.own_subjects(predicate: RDF.type, object: RDF::RDFS.Class) +
+      parser.own_subjects(predicate: RDF.type, object: RDF.Property) + 
+      parser.own_subjects(predicate: RDF.type, object: RDF::OWL.SymmetricProperty) +
+      parser.own_subjects(predicate: RDF.type, object: RDF::OWL.TransitiveProperty)
+
+    subjects.uniq.each do |subject|
+      csv << [
+        parser.clean_url(subject),
+        parser.clean_object_literal(subject, RDF::SKOS.definition),
+        parser.clean_object_url(subject, RDF::RDFS.domain),
+        parser.clean_object_url(subject, RDF::RDFS.range),
+      ]
+    end
+  end
+end
+
 namespace :bio do
   def bio_parser
     RDFParser.new('http://purl.org/vocab/bio/0.1/', namespaces: {
@@ -77,6 +99,7 @@ namespace :bio do
     })
   end
 
+  desc "Scrapes BIO classes to CSV"
   task :classes do
     CSV($stdout, col_sep: "\t") do |csv|
       csv << ['Class', 'Definition']
@@ -91,6 +114,7 @@ namespace :bio do
     end
   end
 
+  desc "Scrapes BIO properties to CSV"
   task :properties do
     CSV($stdout, col_sep: "\t") do |csv|
       csv << ['Property', 'Definition', 'Domain', 'Range', 'Superproperty']
