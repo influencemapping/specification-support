@@ -4,7 +4,7 @@ A collection of Ruby Rake tasks to build an [inventory of terms](https://docs.go
 
 ```
 bundle
-rake -T
+bundle exec rake -T
 ```
 
 Copyright (c) 2015 Open North Inc., released under the MIT license
