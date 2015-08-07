@@ -4,6 +4,7 @@ require 'bundler/setup'
 
 require 'csv'
 require 'json'
+require 'yaml'
 
 require 'active_support/inflector'
 require 'faraday'
